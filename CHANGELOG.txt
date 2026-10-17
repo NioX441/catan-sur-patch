@@ -1,0 +1,76 @@
+Changelog
+=========
+
+All fixes of the save and bugfix patch for "Catan - Staedte und Ritter" (AI version).
+Class and method names refer to the game's code (package de.brettspielwelt).
+
+
+[1.2] - 2026-10-17
+------------------
+Fixed
+  * Speech bubbles were placed inside a fixed 1024x768 area (ChatTool2.border) that is
+    never updated to the real window size. On bigger screens bubbles of players at the
+    bottom or right were pushed up/left; at 2560x1440 the bubble of the bottom-right
+    opponent sat 342 px too high. Bubble.paint() now uses the real window size.
+  * Merchant Fleet (Handelsflotte) followed by Merchant (Haendler) on the same resource
+    in the same turn: the merchant stored the fleet's temporary 2:1 rate as the "old"
+    rate. After the turn the rate fell back to 4:1 although the player still owned the
+    merchant, and once another player took the merchant it stayed at 2:1 for good.
+  * Both Merchant Fleets on the same resource in the same turn: the second one stored the
+    first one's 2:1 as the old rate, so the resource stayed at 2:1 permanently.
+  * Moving the own merchant away from a resource while a Merchant Fleet was active on it:
+    the fleet's 2:1 was lost for the rest of the turn and the merchant's 2:1 stayed
+    permanently.
+    (setHaendler() and setFlotte() of StaedteUndRitterInformer are replaced by SuRFix.)
+
+Changed
+  * The patcher can now replace whole method bodies with a call to a helper class.
+
+
+[1.1] - 2026-10-17
+------------------
+Fixed
+  * BaseGameBoard.drawAnim(): the flying animation accessed target points that were not
+    set yet ("this.fpt[i] is null"). Entries without points are skipped now.
+  * ChatTool2.paint(): speech bubbles are removed by another thread while paint() iterates
+    over them ("ArrayIndexOutOfBoundsException: 0 >= 0"). Access is now safe.
+  * Game help (SpielhilfeTool), "Back" button: removed the only page and then read page 0
+    ("0 >= 0"). "Back" now needs at least two pages in the history.
+  * TextRectangle.getStrWidth(): NullPointerException when text was measured before the
+    component had a Graphics object.
+  * TextRectangle.drawAll()/getStrWidth(): StringIndexOutOfBoundsException with outdated
+    layout positions; substring indices are clamped now.
+  * KISpeech: NullPointerException when a placeholder was replaced by a player name that
+    was not set yet; an empty text is used instead.
+  * StaedteUndRitterInformer.setHaendler(): a click next to the board was already rejected
+    correctly but wrote a stack trace to err.log every time.
+
+Changed
+  * The patcher always builds from the original archive code.orig, so it can be run again
+    to upgrade an older patch version.
+  * Helper classes are compiled against the decrypted game classes.
+
+
+[1.0] - 2026-10-17
+------------------
+Fixed
+  * Profiles could not be created and progress was not saved: the folders kiStuff\save,
+    kiStuff\save\ki and KiSaveGames were missing and the game never created them. The new
+    helper SaveDirFix creates them at startup (MenuBoard), before saving a profile
+    (SpielerData.save()) and before saving a game (GameStore.saveGame()).
+  * The game hung at the end of a round: MenuRangliste.recalcRang() crashed with a
+    NullPointerException in the middle of the winner evaluation because the profile folder
+    could not be listed. File.list() is null-safe now in MenuRangliste and MenuSpielerWahl.
+  * The profile list stayed empty (NullPointerException in MenuSpielerWahl.getAllSpieler()).
+  * Folders for saved games were created with File.mkdir(), which fails if the parent
+    folder is missing; now File.mkdirs() (GameStore, KiStarter).
+  * COWPreferences.getDeviceResolutions(): the table only had room for 20 screen
+    resolutions. Modern monitors report more, the detection crashed ("Index 40 out of bounds
+    for length 40") and the resolution selection was shifted afterwards. It now has room
+    for 256 resolutions.
+  * MenuSpielerWahl.selected(): a click on an invalid table row caused an
+    ArrayIndexOutOfBoundsException (index -1).
+
+Added
+  * patch_anwenden.bat / patch_entfernen.bat to apply and remove the patch; the original
+    archive is kept as Client\code.orig.
