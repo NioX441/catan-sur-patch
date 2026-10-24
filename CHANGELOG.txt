@@ -5,6 +5,23 @@ All fixes of the save and bugfix patch for "Catan - Staedte und Ritter" (AI vers
 Class and method names refer to the game's code (package de.brettspielwelt).
 
 
+[1.3] - 2026-10-24
+------------------
+Fixed
+  * Barbarian attack: the "Barbarians attack Catan" dialog and the result dialog with the
+    strength of every player overlapped. Dialogs are queued; when the production animation
+    moved the queue on automatically (closeWindow()), the old dialog was not hidden and the
+    result opened on top of it at the same position. closeWindow() now hides the text and
+    matrix dialogs first, as the OK button always did. This also clears leftover barbarian
+    text from the matrix dialog, which could reappear in the next matrix dialog (e.g.
+    Monopoly). (StaedteUndRitterBoard and SiedlerBoard)
+  * Trade offers: a player signals "I accept" by posting the mirror image of an offer. If
+    two players did that for the same offer and the trade was made with one of them, the
+    other one's identical offer (e.g. of an AI player) stayed on screen until the AI
+    withdrew it a moment later. SiedlerBaseInformer.tausch() now removes these competing
+    offers right away; unrelated offers stay. (New helper TradeFix.)
+
+
 [1.2] - 2026-10-17
 ------------------
 Fixed

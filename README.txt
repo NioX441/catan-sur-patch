@@ -51,9 +51,10 @@ game runs on any Java version the original ran on.
 Helper classes added to the game (all in src\):
   SaveDirFix   creates the save folders, null-safe File.list(), table row guard
   BugFix       null-/range-safe replacements for single calls (Vector, String, fonts)
-  BoardFix     replacement body for BaseGameBoard.drawAnim()
+  BoardFix     replacement body for BaseGameBoard.drawAnim(), hides dialogs in closeWindow()
   ChatFix      speech bubble helpers (null-safe painting, real screen size)
   SuRFix       replacement bodies for the merchant and merchant fleet logic
+  TradeFix     removes competing "accept" offers after a trade
 
   java src\CatanSavePatch.java <ClientDir> <helperClassDir>   apply the patch
   java src\CatanSavePatch.java <ClientDir> --dump <outDir>    write decrypted original classes

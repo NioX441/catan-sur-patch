@@ -14,7 +14,8 @@ javac --release 8 -Xlint:-options -nowarn -cp "%BUILD%\dec" -d "%BUILD%\classes"
   src\de\brettspielwelt\client\base\BugFix.java ^
   src\de\brettspielwelt\client\games\boards\BoardFix.java ^
   src\de\brettspielwelt\client\tool\ChatFix.java ^
-  src\de\brettspielwelt\server\games\SuRFix.java || goto :fail
+  src\de\brettspielwelt\server\games\SuRFix.java ^
+  src\de\brettspielwelt\server\games\TradeFix.java || goto :fail
 java src\CatanSavePatch.java "%CLIENT%" "%BUILD%\classes" || goto :fail
 rmdir /s /q "%BUILD%\dec"
 echo.

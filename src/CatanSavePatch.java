@@ -66,6 +66,9 @@ public class CatanSavePatch {
     static final String TEXT_RECT = "de/brettspielwelt/client/util/TextRectangle";
     static final String KI_SPEECH = "de/brettspielwelt/server/ki/KISpeech";
     static final String SUR_INFORMER = "de/brettspielwelt/server/games/StaedteUndRitterInformer";
+    static final String SUR_BOARD = "de/brettspielwelt/client/games/boards/StaedteUndRitterBoard";
+    static final String SIEDLER_BOARD = "de/brettspielwelt/client/games/boards/SiedlerBoard";
+    static final String SIEDLER_BASE_INF = "de/brettspielwelt/server/games/SiedlerBaseInformer";
     static final ClassDesc BUGFIX = ClassDesc.of("de.brettspielwelt.client.base.BugFix");
     static final String SAVE_GAME_DESC =
             "(Lde/brettspielwelt/server/base/ServerThread;Lde/brettspielwelt/server/base/BaseInformer;ZLjava/lang/String;)V";
@@ -90,6 +93,8 @@ public class CatanSavePatch {
         "StaedteUndRitterInformer.setHaendler: -> SuRFix",
         "StaedteUndRitterInformer.setFlotte: -> SuRFix",
         "ChatTool2$Bubble.paint: real screen border",
+        "closeWindow: hide dialogs",
+        "SiedlerBaseInformer.tausch: clear competing offers",
     };
 
     /** Whole method bodies that are replaced by a call to a static helper (this, args...). */
@@ -373,6 +378,16 @@ public class CatanSavePatch {
                 if (cls.equals(GAME_STORE) && method.equals("saveGame") && desc.equals(SAVE_GAME_DESC)) {
                     b.invokestatic(FIX, "ensureDirs", VOID);
                     hit("GameStore.saveGame: ensureDirs");
+                }
+                if ((cls.equals(SUR_BOARD) || cls.equals(SIEDLER_BOARD)) && method.equals("closeWindow") && desc.equals("()V")) {
+                    b.aload(0).invokestatic(ClassDesc.of("de.brettspielwelt.client.games.boards.BoardFix"), "hideWindows",
+                            MethodTypeDesc.ofDescriptor("(Lde/brettspielwelt/client/games/boards/SiedlerBaseBoard;)V"));
+                    hit("closeWindow: hide dialogs");
+                }
+                if (cls.equals(SIEDLER_BASE_INF) && method.equals("tausch") && desc.equals("(II)J")) {
+                    b.aload(0).iload(1).iload(2).invokestatic(ClassDesc.of("de.brettspielwelt.server.games.TradeFix"),
+                            "clearCompetingOffers", MethodTypeDesc.ofDescriptor("(L" + SIEDLER_BASE_INF + ";II)V"));
+                    hit("SiedlerBaseInformer.tausch: clear competing offers");
                 }
                 if (cls.equals(SPIELER_WAHL) && method.equals("selected") && desc.equals("(II)V")) {
                     // if (SaveDirFix.badRow(tab, row)) return;

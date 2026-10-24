@@ -13,6 +13,23 @@ public final class BoardFix {
     private BoardFix() {
     }
 
+    /**
+     * Called at the start of closeWindow(). Windows are queued; closeWindow() moves on to the
+     * next one, but only the OK button also hid the dialogs. When a window was moved on
+     * automatically (e.g. by the production animation right after "Barbarians attack"), the
+     * old text dialog stayed visible and the next one (barbarian result) opened on top of it,
+     * and the old text stayed in the matrix dialog.
+     */
+    public static void hideWindows(SiedlerBaseBoard b) {
+        if (b.info != null) {
+            b.info.setActive(false);
+        }
+        if (b.infoMatrix != null) {
+            b.infoMatrix.setActive(false);
+            b.infoMatrix.setText("");
+        }
+    }
+
     public static void drawAnim(BaseGameBoard b, Graphics g) {
         if (b.animation != 1 || b.flying == null) return;
         int[] flying = b.flying;
